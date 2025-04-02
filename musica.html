@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎶 Para você, com amor!</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: url(nos.jpg);
+      background-size:28vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .video-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    iframe {
+      border: none;
+      width: 90vw;
+      max-width: 560px;
+      height: 315px;
+    }
+
+    .voltar {
+      margin-top: 30px;
+      background: #f44336;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+        h1 {
+            font-size: 3rem;
+            color: #040000;
+            text-shadow: 6px 6px 8px rgb(250, 3, 147);
+            margin-bottom: 20px;
+
+            border: 2px solid #2a9d8f;
+            padding: 10px 20px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.4);
+            }
+  </style>
+</head>
+<body>
+  <h1>💛 Essa é pra você!
+  </h1>
+
+  <div class="video-wrapper">
+    <iframe src="https://www.youtube.com/embed/WRxwtV_x8nM?start=12&autoplay=1&mute=0&controls=0"
+      title="YouTube video player"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <a href="index.html" class="voltar">Voltar</a>
+</body>
+</html>

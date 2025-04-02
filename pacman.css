@@ -1,0 +1,36 @@
+
+body {
+  margin: 0;
+  height: 100vh;
+  /*background: black; */
+  overflow: hidden;
+  cursor: none;
+}
+
+.ghost {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: transform 0.1s linear;
+}
+
+#ghost1 {
+  background-image: url('img/blinky.png');
+}
+#ghost2 {
+  background-image: url('img/inky.png');
+}
+
+
+#pacman {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-image: url('img/pacman.gif');
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 100;
+}

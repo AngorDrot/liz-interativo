@@ -1,0 +1,75 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: url('nos2.jpg');
+  background-size: 190px;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.card {
+  background-color: rgb(27, 3, 245);
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 500px;
+  width: 15%;
+}
+
+.titulo {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #1cb226f7;
+  text-shadow: 12px 12px 20px rgb(244, 0, 45);
+}
+
+.botoes {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.botoes button {
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+#btn-sim {
+  background-color: #4caf50;
+  color: white;
+}
+
+#btn-nao {
+  background-color: #f44336;
+  color: white;
+  position: absolute;
+  left: 50%;
+  top: 70%;
+}
+
+.video-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* ocupa a altura inteira da tela */
+}
+
+iframe {
+  border: none;
+  width: 90%;
+  max-width: 560px;
+  height: 315px;
+}
