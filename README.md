@@ -1,7 +1,7 @@
 # 💛 Projeto "Você me Ama, Liz?" 💛
 
 Uma brincadeira interativa e romântica, feita com muito carinho usando **HTML, CSS e JavaScript**, inspirada no clássico **Pac-Man**.  
-O objetivo? Fazer sua parceira dizer **NÃO** de forma divertida — ou então ser perseguida por fantasmas enquanto tenta ir atrás do botão **"SIM"**! 👻😂
+O objetivo? Fazer sua parceira dizer **NÃO** de forma divertida — ou então ser perseguida por fantasmas enquanto tenta clicar do botão **"SIM"**! 👻😂
 
 ---
 
@@ -9,7 +9,7 @@ O objetivo? Fazer sua parceira dizer **NÃO** de forma divertida — ou então s
 
 - 🎮 **Pac-Man** segue o cursor do mouse em tempo real  
 - 👻 **Fantasmas** perseguem o cursor se você demorar para responder  
-- 💥 Se um fantasma encostar no cursor **antes do clique em "SIM"**, o jogo reinicia  
+- 💥 Se um fantasma encostar no cursor **antes do clique em "NÃO"**, o jogo reinicia  
 - 💕 Ao clicar em **"NÃO"**, uma música especial aparece em outra tela  
 - 🎶 Efeitos sonoros: som “waka waka” durante o movimento do Pac-Man  
 - 🖼️ Imagens reais do casal como plano de fundo  
@@ -46,15 +46,20 @@ ou use uma extensão como **Live Server** no VS Code
 
 ```
 liz-interativo/
-├── index.html          ← Página inicial com os botões SIM/NÃO
-├── musica.html         ← Página que toca o clipe especial
-├── pacman.js           ← Lógica dos fantasmas e do Pac-Man
-├── script.js           ← Lógica dos botões e navegação
-├── style.css           ← Estilo visual da página principal
-├── pacman.css          ← Estilo do minigame do Pac-Man
-├── img/                ← Pasta com imagens do casal e sprites
-├── sounds/             ← Efeitos sonoros (waka.mp3, erro.mp3)
-└── README.md           ← Este arquivo
+├── 📄 index.html         → Página principal com botões "SIM" e "NÃO"
+├── 📄 musica.html        → Página do vídeo musical especial
+├── 📄 pacman.html        → Página com o minigame dos fantasmas
+├── 📄 pacman.js          → Código dos fantasmas perseguindo o cursor
+├── 📄 script.js          → Comportamento dos botões e redirecionamento
+├── 📄 style.css          → Estilo visual da interface principal
+├── 📄 pacman.css         → Estilo do minigame e sprites
+├── 📁 img/               → Imagens do casal e do Pac-Man 👩‍❤️‍👨
+│   ├── nos.jpg
+│   └── nos2.jpg
+├── 📁 sounds/            → Efeitos sonoros (waka.mp3, erro.mp3) 🔊
+│   ├── waka.mp3
+│   └── windows-error.mp3
+└── 📄 README.md          → Descrição do projeto (este arquivo)
 ```
 
 ---
@@ -74,3 +79,4 @@ Ou me seguir no GitHub: [@AngorDrot](https://github.com/AngorDrot)
 ---
 
 > Feito com amor, JavaScript e muitos fantasminhas 🟡👻
+
