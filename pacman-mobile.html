@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pac-Man Mobile</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    #pacman {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: url('img/pacman.gif') no-repeat center/cover;
+      pointer-events: none;
+    }
+
+    .ghost {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background-size: cover;
+    }
+
+    #ghost1 { background-image: url('img/blinky.png'); }
+    #ghost2 { background-image: url('img/inky.png'); }
+
+    .message {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-family: sans-serif;
+      font-size: 1rem;
+      z-index: 1000;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="message">📲 Toque e arraste o dedo na tela para mover o Pac-Man 🟡</div>
+  <div id="pacman"></div>
+  <div class="ghost" id="ghost1"></div>
+  <div class="ghost" id="ghost2"></div>
+
+  <script>
+    const pacman = document.getElementById('pacman');
+    const ghosts = [
+      document.getElementById('ghost1'),
+      document.getElementById('ghost2')
+    ];
+
+    let touchX = window.innerWidth / 2;
+    let touchY = window.innerHeight / 2;
+
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        touchX = e.touches[0].clientX;
+        touchY = e.touches[0].clientY;
+
+        pacman.style.left = `${touchX - 20}px`;
+        pacman.style.top = `${touchY - 20}px`;
+      }
+    });
+
+    ghosts.forEach((ghost, index) => {
+      let x = Math.random() * window.innerWidth;
+      let y = Math.random() * window.innerHeight;
+
+      function moveGhost() {
+        const speed = 0.02 + index * 0.01;
+        x += (touchX - x) * speed;
+        y += (touchY - y) * speed;
+
+        ghost.style.transform = `translate(${x}px, ${y}px)`;
+        requestAnimationFrame(moveGhost);
+      }
+
+      moveGhost();
+    });
+  </script>
+</body>
+</html>
