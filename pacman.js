@@ -1,5 +1,4 @@
-
-// Seleciona o elemento do Pacman e os três fantasmas na tela
+// Seleciona o elemento do Pacman e os três fantasmas
 const pacman = document.getElementById("pacman");
 const ghosts = [
   document.getElementById("ghost1"),
@@ -7,11 +6,11 @@ const ghosts = [
   document.getElementById("ghost3")
 ];
 
-// Carrega o som do Pacman andando
+// Carrega o som do Pacman andando (waka waka) em loop
 const waka = new Audio("sounds/waka.mp3");
 waka.loop = true;
 
-// Posição inicial no centro da tela
+// Define a posição inicial do cursor/Pacman (centro da tela)
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
 let lastX = mouseX;
@@ -21,36 +20,38 @@ let isMoving = false;
 let moveTimeout;
 
 /**
- * Atualiza posição do Pacman na tela
+ * Atualiza a posição visual do Pacman na tela
  */
 function updatePacmanPosition(x, y) {
-  pacman.style.left = `${x - 20}px`;
-  pacman.style.top = `${y - 20}px`;
+  pacman.style.left = `${x - 20}px`; // Centraliza o Pacman horizontalmente
+  pacman.style.top = `${y - 20}px`;  // Centraliza o Pacman verticalmente
 }
 
 /**
- * Atualiza direção visual do Pacman
+ * Atualiza a direção visual do Pacman com base no movimento
  */
 function updatePacmanDirection(x, y) {
-  const dx = x - lastX;
-  const dy = y - lastY;
+  const dx = x - lastX;  // Diferença horizontal
+  const dy = y - lastY;  // Diferença vertical
 
+  // Verifica se o movimento é predominantemente horizontal ou vertical
   if (Math.abs(dx) > Math.abs(dy)) {
-    pacman.style.transform = dx > 0 ? "rotate(0deg)" : "scaleX(-1)";
+    pacman.style.transform = dx > 0 ? "rotate(0deg)" : "scaleX(-1)"; // Direita ou Esquerda
   } else {
-    pacman.style.transform = dy > 0 ? "rotate(90deg)" : "rotate(-90deg)";
+    pacman.style.transform = dy > 0 ? "rotate(90deg)" : "rotate(-90deg)"; // Baixo ou Cima
   }
 }
 
 /**
- * Controla o som e a movimentação do Pacman
+ * Controla o som e a movimentação do Pacman e, em dispositivos touch, verifica colisão com o botão "NÃO"
  */
 function handleMovement(x, y) {
   if (!isMoving) {
     isMoving = true;
-    waka.play();
+    waka.play(); // Toca o som ao iniciar o movimento
   }
 
+  // Reinicia o temporizador: após 200ms sem movimento, o som para
   clearTimeout(moveTimeout);
   moveTimeout = setTimeout(() => {
     isMoving = false;
@@ -58,15 +59,22 @@ function handleMovement(x, y) {
     waka.currentTime = 0;
   }, 200);
 
+  // Atualiza a direção e posição do Pacman
   updatePacmanDirection(x, y);
   updatePacmanPosition(x, y);
 
+  // Armazena as últimas posições para o próximo cálculo de direção
   lastX = x;
   lastY = y;
+
+  // Se o dispositivo for touch, verifica colisão entre o Pacman e o botão "NÃO"
+  if ('ontouchstart' in window) {
+    checkCollisionWithBtnNao();
+  }
 }
 
 /**
- * Eventos de movimento para mouse (desktop)
+ * Configura os eventos para movimento do mouse (desktop)
  */
 function setupMouseMovement() {
   document.addEventListener("mousemove", (e) => {
@@ -85,11 +93,11 @@ function setupMouseMovement() {
 }
 
 /**
- * Eventos de toque contínuo para dispositivos móveis
+ * Configura os eventos para toque e arraste contínuo (mobile)
  */
 function setupTouchMovement() {
   document.addEventListener("touchstart", (e) => {
-    e.preventDefault(); // Impede a rolagem
+    e.preventDefault(); // Impede comportamento padrão (como a rolagem)
     if (e.touches.length > 0) {
       const touch = e.touches[0];
       mouseX = touch.clientX;
@@ -99,7 +107,7 @@ function setupTouchMovement() {
   }, { passive: false });
 
   document.addEventListener("touchmove", (e) => {
-    e.preventDefault(); // Impede a rolagem
+    e.preventDefault(); // Impede a rolagem enquanto arrasta
     if (e.touches.length > 0) {
       const touch = e.touches[0];
       mouseX = touch.clientX;
@@ -109,6 +117,7 @@ function setupTouchMovement() {
   }, { passive: false });
 
   document.addEventListener("touchend", () => {
+    // Ao levantar o dedo, para o som e o movimento
     waka.pause();
     waka.currentTime = 0;
     isMoving = false;
@@ -116,7 +125,83 @@ function setupTouchMovement() {
 }
 
 /**
- * Cria uma mensagem na tela quando o fantasma pega o jogador
+ * Verifica se o Pacman está colidindo com o botão "NÃO"
+ * Em caso afirmativo, reposiciona o botão aleatoriamente na tela.
+ */
+function checkCollisionWithBtnNao() {
+  const btnNao = document.getElementById("btn-nao");
+  if (!btnNao) return;
+
+  // Obtém as dimensões e posição do Pacman e do botão
+  const pacmanRect = pacman.getBoundingClientRect();
+  const btnRect = btnNao.getBoundingClientRect();
+
+  // Checa se há interseção entre os elementos
+  if (
+    pacmanRect.right > btnRect.left &&
+    pacmanRect.left < btnRect.right &&
+    pacmanRect.bottom > btnRect.top &&
+    pacmanRect.top < btnRect.bottom
+  ) {
+    // Calcula uma nova posição aleatória para o botão "NÃO"
+    const btnWidth = btnNao.offsetWidth;
+    const btnHeight = btnNao.offsetHeight;
+    const padding = 10;
+
+    const maxX = window.innerWidth - btnWidth - padding;
+    const maxY = window.innerHeight - btnHeight - padding;
+
+    const newX = Math.floor(Math.random() * maxX);
+    const newY = Math.floor(Math.random() * maxY);
+
+    btnNao.style.left = `${newX}px`;
+    btnNao.style.top = `${newY}px`;
+  }
+}
+
+/**
+ * Configura os fantasmas para perseguir o cursor/ toque
+ */
+function setupGhosts() {
+  ghosts.forEach((ghost, index) => {
+    let x, y;
+    // Garante que o fantasma comece longe do Pacman (não perto do cursor inicial)
+    do {
+      x = Math.random() * window.innerWidth;
+      y = Math.random() * window.innerHeight;
+    } while (Math.abs(x - mouseX) < 200 && Math.abs(y - mouseY) < 200);
+
+    /**
+     * Movimento contínuo do fantasma em direção ao Pacman
+     */
+    function moveGhost() {
+      const speed = 0.03 + index * 0.02;
+      x += (mouseX - x) * speed;
+      y += (mouseY - y) * speed;
+
+      ghost.style.transform = `translate(${x}px, ${y}px)`;
+
+      const dist = Math.hypot(mouseX - x, mouseY - y);
+      if (dist < 30 && !window.cliqueConfirmado && !window.pegou) {
+        window.pegou = true;
+
+        // Toca som de erro e exibe mensagem de game over
+        const audio = new Audio("https://www.myinstants.com/media/sounds/windows-error.mp3");
+        audio.play();
+
+        createGameOverMessage();
+        setTimeout(() => location.reload(), 3000);
+      }
+
+      requestAnimationFrame(moveGhost);
+    }
+
+    moveGhost(); // Inicia o movimento do fantasma
+  });
+}
+
+/**
+ * Cria e exibe a mensagem de "Game Over" na tela
  */
 function createGameOverMessage() {
   const aviso = document.createElement("div");
@@ -143,43 +228,10 @@ function createGameOverMessage() {
 }
 
 /**
- * Fantasmas perseguem o cursor/touch e detectam colisão
- */
-function setupGhosts() {
-  ghosts.forEach((ghost, index) => {
-    let x, y;
-    do {
-      x = Math.random() * window.innerWidth;
-      y = Math.random() * window.innerHeight;
-    } while (Math.abs(x - mouseX) < 200 && Math.abs(y - mouseY) < 200);
-
-    function moveGhost() {
-      const speed = 0.03 + index * 0.02;
-      x += (mouseX - x) * speed;
-      y += (mouseY - y) * speed;
-
-      ghost.style.transform = `translate(${x}px, ${y}px)`;
-
-      const dist = Math.hypot(mouseX - x, mouseY - y);
-      if (dist < 30 && !window.cliqueConfirmado && !window.pegou) {
-        window.pegou = true;
-
-        const audio = new Audio("https://www.myinstants.com/media/sounds/windows-error.mp3");
-        audio.play();
-
-        createGameOverMessage();
-        setTimeout(() => location.reload(), 3000);
-      }
-
-      requestAnimationFrame(moveGhost);
-    }
-
-    moveGhost();
-  });
-}
-
-/**
- * Início do jogo
+ * Inicia o jogo quando o DOM estiver totalmente carregado:
+ * - Define a posição inicial do Pacman.
+ * - Ativa os eventos para mouse e touch.
+ * - Inicializa os fantasmas.
  */
 document.addEventListener("DOMContentLoaded", () => {
   updatePacmanPosition(mouseX, mouseY);
