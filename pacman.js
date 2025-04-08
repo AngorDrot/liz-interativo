@@ -1,142 +1,189 @@
 
+// Seleciona o elemento do Pacman e os três fantasmas na tela
+const pacman = document.getElementById("pacman");
 const ghosts = [
   document.getElementById("ghost1"),
   document.getElementById("ghost2"),
   document.getElementById("ghost3")
 ];
 
+// Carrega o som do Pacman andando
+const waka = new Audio("sounds/waka.mp3");
+waka.loop = true;
+
+// Posição inicial no centro da tela
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
 let lastX = mouseX;
 let lastY = mouseY;
 
-function getCursorPosition() {
-    document.addEventListener("mousemove", (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      lastX = mouseX;
-      lastY = mouseY;
-  
-      pacman.style.left = `${mouseX - 20}px`;
-      pacman.style.top = `${mouseY - 20}px`;
-    });
-  }
-  
-const pacman = document.getElementById("pacman");
-const waka = new Audio("sounds/waka.mp3");
-waka.loop = true; // toca continuamente enquanto se move
+let isMoving = false;
+let moveTimeout;
 
-document.addEventListener("DOMContentLoaded", () => {
-    document.body.focus();
-    getCursorPosition(); // ativa rastreamento inicial forçado
+/**
+ * Atualiza posição do Pacman na tela
+ */
+function updatePacmanPosition(x, y) {
+  pacman.style.left = `${x - 20}px`;
+  pacman.style.top = `${y - 20}px`;
+}
+
+/**
+ * Atualiza direção visual do Pacman
+ */
+function updatePacmanDirection(x, y) {
+  const dx = x - lastX;
+  const dy = y - lastY;
+
+  if (Math.abs(dx) > Math.abs(dy)) {
+    pacman.style.transform = dx > 0 ? "rotate(0deg)" : "scaleX(-1)";
+  } else {
+    pacman.style.transform = dy > 0 ? "rotate(90deg)" : "rotate(-90deg)";
+  }
+}
+
+/**
+ * Controla o som e a movimentação do Pacman
+ */
+function handleMovement(x, y) {
+  if (!isMoving) {
+    isMoving = true;
+    waka.play();
+  }
+
+  clearTimeout(moveTimeout);
+  moveTimeout = setTimeout(() => {
+    isMoving = false;
+    waka.pause();
+    waka.currentTime = 0;
+  }, 200);
+
+  updatePacmanDirection(x, y);
+  updatePacmanPosition(x, y);
+
+  lastX = x;
+  lastY = y;
+}
+
+/**
+ * Eventos de movimento para mouse (desktop)
+ */
+function setupMouseMovement() {
+  document.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    handleMovement(mouseX, mouseY);
   });
-  
-document.addEventListener("mouseenter", (e) => {
+
+  document.addEventListener("mouseenter", (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
     lastX = mouseX;
     lastY = mouseY;
-  
-    pacman.style.left = `${mouseX - 20}px`;
-    pacman.style.top = `${mouseY - 20}px`;
+    updatePacmanPosition(mouseX, mouseY);
   });
-  
-  let isMoving = false;
-  let moveTimeout;
-  
-document.addEventListener("mousemove", (e) => {
-    if (!isMoving) {
-  isMoving = true;
-  waka.play();
 }
 
-clearTimeout(moveTimeout);
-moveTimeout = setTimeout(() => {
-  isMoving = false;
-  waka.pause();
-  waka.currentTime = 0;
-}, 200);
-
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  const dx = mouseX - lastX;
-  const dy = mouseY - lastY;
-  
-  if (Math.abs(dx) > Math.abs(dy)) {
-    // Movimento horizontal
-    if (dx > 0) {
-      pacman.style.transform = "rotate(0deg)"; // Direita
-    } else {
-      pacman.style.transform = "scaleX(-1)"; // Esquerda
+/**
+ * Eventos de toque contínuo para dispositivos móveis
+ */
+function setupTouchMovement() {
+  document.addEventListener("touchstart", (e) => {
+    e.preventDefault(); // Impede a rolagem
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      mouseX = touch.clientX;
+      mouseY = touch.clientY;
+      handleMovement(mouseX, mouseY);
     }
-  } else {
-    // Movimento vertical
-    if (dy > 0) {
-      pacman.style.transform = "rotate(90deg)"; // Baixo
-    } else {
-      pacman.style.transform = "rotate(-90deg)"; // Cima
+  }, { passive: false });
+
+  document.addEventListener("touchmove", (e) => {
+    e.preventDefault(); // Impede a rolagem
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      mouseX = touch.clientX;
+      mouseY = touch.clientY;
+      handleMovement(mouseX, mouseY);
     }
-  }
-  
-  lastX = mouseX;
-  lastY = mouseY;
-  
-  pacman.style.left = `${mouseX - 20}px`;
-  pacman.style.top = `${mouseY - 20}px`;
-});
+  }, { passive: false });
 
-ghosts.forEach((ghost, index) => {
-  let x, y;
-  do {
-    x = Math.random() * window.innerWidth;
-    y = Math.random() * window.innerHeight;
-  } while (Math.abs(x - mouseX) < 200 && Math.abs(y - mouseY) < 200);
+  document.addEventListener("touchend", () => {
+    waka.pause();
+    waka.currentTime = 0;
+    isMoving = false;
+  });
+}
 
-  function moveGhost() {
-    const speed = 0.03 + index * 0.02;
-    x += (mouseX - x) * speed;
-    y += (mouseY - y) * speed;
+/**
+ * Cria uma mensagem na tela quando o fantasma pega o jogador
+ */
+function createGameOverMessage() {
+  const aviso = document.createElement("div");
+  aviso.innerText = "💀 O fantasma te pegou antes de clicar em SIM!";
+  Object.assign(aviso.style, {
+    position: "fixed",
+    top: "40%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    background: "rgba(0,0,0,0.85)",
+    color: "white",
+    padding: "20px 30px",
+    fontSize: "1.5rem",
+    borderRadius: "15px",
+    zIndex: "9999",
+    textAlign: "center",
+    boxShadow: "0 0 10px red",
+    opacity: "0",
+    transition: "opacity 1s ease-in"
+  });
 
-    ghost.style.transform = `translate(${x}px, ${y}px)`;
+  document.body.appendChild(aviso);
+  setTimeout(() => aviso.style.opacity = "1", 10);
+}
 
-    // Detectar colisão entre fantasma e cursor
-    const dist = Math.hypot(mouseX - x, mouseY - y);
-    if (dist < 30 && !window.cliqueConfirmado && !window.pegou) {
+/**
+ * Fantasmas perseguem o cursor/touch e detectam colisão
+ */
+function setupGhosts() {
+  ghosts.forEach((ghost, index) => {
+    let x, y;
+    do {
+      x = Math.random() * window.innerWidth;
+      y = Math.random() * window.innerHeight;
+    } while (Math.abs(x - mouseX) < 200 && Math.abs(y - mouseY) < 200);
+
+    function moveGhost() {
+      const speed = 0.03 + index * 0.02;
+      x += (mouseX - x) * speed;
+      y += (mouseY - y) * speed;
+
+      ghost.style.transform = `translate(${x}px, ${y}px)`;
+
+      const dist = Math.hypot(mouseX - x, mouseY - y);
+      if (dist < 30 && !window.cliqueConfirmado && !window.pegou) {
         window.pegou = true;
-      
-        // Áudio de erro
+
         const audio = new Audio("https://www.myinstants.com/media/sounds/windows-error.mp3");
         audio.play();
-      
-        // Texto animado
-        const aviso = document.createElement("div");
-        aviso.innerText = "💀 O fantasma te pegou antes de clicar em SIM!";
-        aviso.style.position = "fixed";
-        aviso.style.top = "40%";
-        aviso.style.left = "50%";
-        aviso.style.transform = "translate(-50%, -50%)";
-        aviso.style.background = "rgba(0,0,0,0.85)";
-        aviso.style.color = "white";
-        aviso.style.padding = "20px 30px";
-        aviso.style.fontSize = "1.5rem";
-        aviso.style.borderRadius = "15px";
-        aviso.style.zIndex = "9999";
-        aviso.style.textAlign = "center";
-        aviso.style.boxShadow = "0 0 10px red";
-        aviso.style.opacity = "0";
-        aviso.style.transition = "opacity 1s ease-in";
-      
-        document.body.appendChild(aviso);
-        setTimeout(() => { aviso.style.opacity = "1"; }, 10);
-      
-        setTimeout(() => {
-          location.reload();
-        }, 3000);
-      }
-      
-      
-    requestAnimationFrame(moveGhost);
-  }
 
-  moveGhost();
+        createGameOverMessage();
+        setTimeout(() => location.reload(), 3000);
+      }
+
+      requestAnimationFrame(moveGhost);
+    }
+
+    moveGhost();
+  });
+}
+
+/**
+ * Início do jogo
+ */
+document.addEventListener("DOMContentLoaded", () => {
+  updatePacmanPosition(mouseX, mouseY);
+  setupMouseMovement();
+  setupTouchMovement();
+  setupGhosts();
 });
