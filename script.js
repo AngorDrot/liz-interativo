@@ -1,4 +1,3 @@
-
 const btnNao = document.getElementById("btn-nao");
 
 btnNao.addEventListener("mouseenter", () => {
@@ -16,19 +15,19 @@ btnNao.addEventListener("mouseenter", () => {
   btnNao.style.top = `${newY}px`;
 });
 
-document.getElementById("btn-sim").addEventListener("click", () => {
+// ✅ BLOCO com clique e toque no botão SIM
+const btnSim = document.getElementById("btn-sim");
+
+// Clique para desktop
+btnSim.addEventListener("click", () => {
+  console.log("Botão SIM clicado!");
   window.cliqueConfirmado = true;
   window.location.href = "musica.html";
 });
 
-
-  //msg.innerText = "Eu te amo mais ainda! 💛🌻";
-  //msg.style.position = "fixed";
-  //msg.style.bottom = "40px";
-  //msg.style.left = "50%";
-  //msg.style.transform = "translateX(-50%)";
-  //msg.style.fontSize = "2em";
-  //msg.style.color = "white";
-  //msg.style.textShadow = "2px 2px 5px black";
-  //document.body.appendChild(msg);
-//});
+// Toque para mobile
+btnSim.addEventListener("touchstart", () => {
+  console.log("Botão SIM tocado!");
+  window.cliqueConfirmado = true;
+  window.location.href = "musica.html";
+}, { passive: true });
